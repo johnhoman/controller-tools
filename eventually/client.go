@@ -70,6 +70,6 @@ func (c *Client) ExpectUpdate(ctx context.Context, obj client.Object) gomega.Asy
 	})
 }
 
-func NewEventuallyClient(client client.Client) *Client {
+func New(client client.Client) *Client {
 	return &Client{k8: client}
 }
