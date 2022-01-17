@@ -54,7 +54,7 @@ func (c *Client) Get(ctx context.Context, key types.NamespacedName, obj client.O
 	})
 }
 
-func (c *Client) GetWhen(ctx context.Context, key types.NamespacedName, obj client.Object, predicate func(obj client.Object) bool) gomega.AsyncAssertion {
+func (c *Client) GetWhen(ctx context.Context, key types.NamespacedName, obj client.Object, predicate PredicateFunc) gomega.AsyncAssertion {
 	return gomega.Eventually(func() error {
 		err := c.k8.Get(ctx, key, obj)
 		if err != nil {
@@ -89,3 +89,5 @@ func (c *Client) Update(ctx context.Context, obj client.Object) gomega.AsyncAsse
 func New(client client.Client) *Client {
 	return &Client{k8: client}
 }
+
+var _ Eventually = &Client{}
