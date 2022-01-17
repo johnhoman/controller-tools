@@ -54,12 +54,6 @@ func (i *integrationTestManager) StopManager() {
 	i.cancelFunc()
 }
 
-func (i *integrationTestManager) StopManagerFunc() interface{} {
-	return func() {
-		i.StopManager()
-	}
-}
-
 func (i *integrationTestManager) GetContext() context.Context {
 	return i.ctx
 }

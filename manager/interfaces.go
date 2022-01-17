@@ -49,7 +49,6 @@ type IntegrationTest interface {
 	ctrl.Manager
 	StartManager()
 	StopManager()
-	StopManagerFunc() interface{}
 	GetContext() context.Context
 	Eventually() AwaitClient
 	Expect() Client
