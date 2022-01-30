@@ -52,6 +52,7 @@ type IntegrationTest interface {
 	GetContext() context.Context
 	Eventually() AwaitClient
 	Expect() Client
+	Uncached() client.Client
 }
 
 type Builder interface {

@@ -68,6 +68,10 @@ func (i *integrationTestManager) Expect() Client {
 	return &k
 }
 
+func (i *integrationTestManager) Uncached() client.Client {
+	return i.client
+}
+
 
 var _ IntegrationTest = &integrationTestManager{}
 
