@@ -10,7 +10,13 @@ import (
     "github.com/johnhoman/controller-tools/prefab"
 )
 
-func ServiceAccount(mgr *controllertools.Manager, options ...func(object client.Object)) error {
+// ServiceAccount creates a new service account with a random name. Default values
+// can be applied with options functions e.g.
+// ServiceAccount(mgr, func(obj client.Object) { obj.SetName("my-service-account") })
+func ServiceAccount(
+    mgr *controllertools.Manager,
+    options ...func(object client.Object),
+) (*corev1.ServiceAccount, error) {
     obj := &corev1.ServiceAccount{
         TypeMeta: metav1.TypeMeta{
             Kind: "ServiceAccount",
@@ -32,5 +38,9 @@ func ServiceAccount(mgr *controllertools.Manager, options ...func(object client.
         opt(obj)
     }
 
-    return crud.Create(mgr, obj)
+    err := crud.Create(mgr, obj)
+    if err != nil {
+        return nil, err
+    }
+    return obj, nil
 }
