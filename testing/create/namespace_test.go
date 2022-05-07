@@ -1,13 +1,14 @@
 package create
 
 import (
-	"github.com/johnhoman/controller-tools/defaulting"
-	suite2 "github.com/johnhoman/controller-tools/testing/suite"
-	v1 "k8s.io/api/core/v1"
 	"testing"
+
+	"github.com/johnhoman/controller-tools/defaulting"
+	"github.com/johnhoman/controller-tools/testing/suite"
+	v1 "k8s.io/api/core/v1"
 )
 
-type NamespaceCreate struct{ suite2.EnvTest }
+type NamespaceCreate struct{ suite.EnvTest }
 
 func (suite *NamespaceCreate) TestNamespaceCreate() {
 	ns, err := Namespace(suite.Manager())
@@ -29,4 +30,4 @@ func (suite *NamespaceCreate) TestNamespaceCreateWithOptions() {
 	suite.Metadata(ns).HasLabel("aaa.bbb.cc", "false")
 }
 
-func TestNamespaceCreate(t *testing.T) { suite2.Run(t, &NamespaceCreate{}) }
+func TestNamespaceCreate(t *testing.T) { suite.Run(t, &NamespaceCreate{}) }

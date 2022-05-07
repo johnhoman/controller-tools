@@ -6,11 +6,6 @@ import (
 	"strings"
 )
 
-var (
-	Run = suite.Run
-	_   = Run
-)
-
 type Suite struct {
 	suite.Suite
 }
@@ -57,3 +52,8 @@ func (m *metadata) HasLabel(expectedKey, expectedValue string) bool {
 func (suite *Suite) Metadata(obj metav1.Object) *metadata {
 	return &metadata{suite: suite, Object: obj}
 }
+
+var (
+	Run = suite.Run
+	_   = Run
+)

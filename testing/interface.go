@@ -1,7 +1,9 @@
 package testing
 
-import "github.com/johnhoman/controller-tools/internal/testing/crud"
+import (
+    "github.com/johnhoman/controller-tools/testing/internal/testing/crud"
+)
 
 type Manager interface {
-	crud.Manager
+    crud.Manager
 }

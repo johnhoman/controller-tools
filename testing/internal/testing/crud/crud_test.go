@@ -3,8 +3,6 @@ package crud
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/johnhoman/controller-tools/prefab"
 	"github.com/johnhoman/controller-tools/testing/suite"
 )
@@ -18,8 +16,8 @@ func (suite *CrudSuite) TestCreate() {
 		prefab.InNamespace(suite.Manager().GetNamespace()),
 		prefab.Nginx(),
 	)
-	require.Nil(suite.T(), Create(suite.Manager(), pod))
-	require.NotEqual(suite.T(), "", pod.GetResourceVersion())
+	suite.Require().Nil(Create(suite.Manager(), pod))
+	suite.Require().NotEqual("", pod.GetResourceVersion())
 }
 
 func TestSuite(t *testing.T) { suite.Run(t, &CrudSuite{}) }

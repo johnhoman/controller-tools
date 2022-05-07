@@ -3,6 +3,7 @@ package crud
 import (
 	"context"
 	"fmt"
+	"github.com/johnhoman/controller-tools/defaulting"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
@@ -19,11 +20,17 @@ type Manager interface {
 
 func Create(mgr Manager, obj client.Object, options ...interface{}) error {
 	timeout := defaultTimeout
+	opts := make([]defaulting.Default, 0)
 	for _, option := range options {
 		switch opt := option.(type) {
 		case time.Duration:
 			timeout = opt
+		case defaulting.Default:
+			opts = append(opts, opt)
 		}
+	}
+	for _, opt := range opts {
+		opt.Apply(obj)
 	}
 	cli := mgr.GetClient()
 	err := cli.Create(mgr.GetContext(), obj)

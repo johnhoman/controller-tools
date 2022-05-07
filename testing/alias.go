@@ -1,9 +1,9 @@
 package testing
 
 import (
+	"github.com/johnhoman/controller-tools/testing/internal/testing/crud"
 	"testing"
 
-	"github.com/johnhoman/controller-tools/internal/testing/crud"
 	"github.com/johnhoman/controller-tools/testing/suite"
 )
 
