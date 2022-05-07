@@ -20,6 +20,18 @@ type EnvTest struct {
 	mgr        *manager.Manager
 }
 
+func (suite *EnvTest) Start() {
+	go func() {
+		defer func() {
+			if e := recover(); e != nil {
+				suite.Fail(e.(error).Error())
+			}
+		}()
+		suite.Nil(suite.mgr.Start(suite.context))
+	}()
+	suite.NotNil(suite.mgr.NamespacedClient())
+}
+
 func (suite *EnvTest) Manager() *manager.Manager {
 	return suite.mgr
 }
@@ -37,16 +49,6 @@ func (suite *EnvTest) SetupTest() {
 	require.NotNil(suite.T(), suite.cfg)
 	suite.context, suite.cancelFunc = context.WithCancel(context.Background())
 	suite.mgr = manager.NewManager(suite.cfg, scheme.Scheme)
-
-	go func() {
-		defer func() {
-			if e := recover(); e != nil {
-				suite.Fail(e.(error).Error())
-			}
-		}()
-		suite.Nil(suite.mgr.Start(suite.context))
-	}()
-	suite.NotNil(suite.mgr.NamespacedClient())
 }
 
 func (suite *EnvTest) TearDownTest() {
