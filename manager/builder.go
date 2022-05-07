@@ -36,10 +36,10 @@ import (
 
 type integrationTestManager struct {
 	ctrl.Manager
-	ctx context.Context
+	ctx        context.Context
 	cancelFunc context.CancelFunc
 	eventually eventually.Eventually
-	client client.Client
+	client     client.Client
 }
 
 func (i *integrationTestManager) StartManager() {
@@ -72,17 +72,26 @@ func (i *integrationTestManager) Uncached() client.Client {
 	return i.client
 }
 
-
 var _ IntegrationTest = &integrationTestManager{}
 
 type builder struct {
-	scheme *runtime.Scheme
-	namespace string
-	webhookOpts *envtest.WebhookInstallOptions
+	scheme            *runtime.Scheme
+	namespace         string
+	webhookOpts       *envtest.WebhookInstallOptions
+	isolatedNamespace bool
 }
 
 func (b *builder) WithWebhookInstallOptions(options envtest.WebhookInstallOptions) Builder {
 	b.webhookOpts = &options
+	return b
+}
+
+func (b *builder) Isolate() Builder {
+	return b.WithIsolatedNamespace(true)
+}
+
+func (b *builder) WithIsolatedNamespace(x bool) Builder {
+	b.isolatedNamespace = x
 	return b
 }
 
@@ -93,10 +102,13 @@ func (b *builder) WithScheme(scheme *runtime.Scheme) Builder {
 
 func (b *builder) Complete(cfg *rest.Config) IntegrationTest {
 	opts := ctrl.Options{
-		MetricsBindAddress: "0",
+		MetricsBindAddress:     "0",
 		HealthProbeBindAddress: "0",
-		LeaderElection: false,
-		Namespace: b.namespace,
+		LeaderElection:         false,
+		// Namespace: b.namespace,
+	}
+	if b.isolatedNamespace {
+		opts.Namespace = b.namespace
 	}
 	opts.Scheme = b.scheme
 	if opts.Scheme == nil {
@@ -120,10 +132,10 @@ func (b *builder) Complete(cfg *rest.Config) IntegrationTest {
 	gomega.Expect(k8.Create(ctx, ns)).To(gomega.Succeed())
 
 	return &integrationTestManager{
-		Manager: mgr,
+		Manager:    mgr,
 		eventually: eventually.New(client.NewNamespacedClient(k8, b.namespace)),
-		client: client.NewNamespacedClient(k8, b.namespace),
-		ctx: ctx,
+		client:     client.NewNamespacedClient(k8, b.namespace),
+		ctx:        ctx,
 		cancelFunc: cancel,
 	}
 }
@@ -133,30 +145,31 @@ var _ Builder = &builder{}
 func IntegrationTestBuilder() *builder {
 	ns := "testspace-" + uuid.New().String()[:8]
 	return &builder{
-		namespace: ns,
-		webhookOpts: nil,
-		scheme: nil,
+		namespace:         ns,
+		webhookOpts:       nil,
+		scheme:            nil,
+		isolatedNamespace: true,
 	}
 }
 
 type awaitClient struct {
-	ctx context.Context
+	ctx        context.Context
 	eventually eventually.Eventually
 }
 
-func (a* awaitClient) Get(key types.NamespacedName, obj client.Object) gomega.AsyncAssertion {
+func (a *awaitClient) Get(key types.NamespacedName, obj client.Object) gomega.AsyncAssertion {
 	return a.eventually.Get(a.ctx, key, obj)
 }
 
-func (a* awaitClient) Create(object client.Object) gomega.AsyncAssertion {
+func (a *awaitClient) Create(object client.Object) gomega.AsyncAssertion {
 	return a.eventually.Create(a.ctx, object)
 }
 
-func (a* awaitClient) Update(object client.Object) gomega.AsyncAssertion {
+func (a *awaitClient) Update(object client.Object) gomega.AsyncAssertion {
 	return a.eventually.Update(a.ctx, object)
 }
 
-func (a* awaitClient) GetWhen(key types.NamespacedName, obj client.Object, predicateFunc eventually.PredicateFunc) gomega.AsyncAssertion {
+func (a *awaitClient) GetWhen(key types.NamespacedName, obj client.Object, predicateFunc eventually.PredicateFunc) gomega.AsyncAssertion {
 	return a.eventually.GetWhen(a.ctx, key, obj, predicateFunc)
 }
 
@@ -164,22 +177,22 @@ var _ AwaitClient = &awaitClient{}
 
 type k8client struct {
 	ctx context.Context
-	k8 client.Client
+	k8  client.Client
 }
 
-func (k* k8client) Get(key types.NamespacedName, obj client.Object) gomega.Assertion {
+func (k *k8client) Get(key types.NamespacedName, obj client.Object) gomega.Assertion {
 	return gomega.Expect(k.k8.Get(k.ctx, key, obj))
 }
 
-func (k* k8client) Create(object client.Object) gomega.Assertion {
+func (k *k8client) Create(object client.Object) gomega.Assertion {
 	return gomega.Expect(k.k8.Create(k.ctx, object))
 }
 
-func (k* k8client) Update(object client.Object) gomega.Assertion {
+func (k *k8client) Update(object client.Object) gomega.Assertion {
 	return gomega.Expect(k.k8.Update(k.ctx, object))
 }
 
-func (k* k8client) Delete(object client.Object) gomega.Assertion {
+func (k *k8client) Delete(object client.Object) gomega.Assertion {
 	return gomega.Expect(k.k8.Delete(k.ctx, object))
 }
 

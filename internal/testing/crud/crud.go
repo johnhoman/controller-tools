@@ -1,15 +1,23 @@
 package crud
 
 import (
+	"context"
 	"fmt"
-	"github.com/johnhoman/controller-tools"
+	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
 
 const defaultTimeout = time.Second
 
-func Create(mgr *controllertools.Manager, obj client.Object, options ...interface{}) error {
+type Manager interface {
+	GetClient() client.Client
+	GetContext() context.Context
+	GetNamespace() string
+	GetScheme() *runtime.Scheme
+}
+
+func Create(mgr Manager, obj client.Object, options ...interface{}) error {
 	timeout := defaultTimeout
 	for _, option := range options {
 		switch opt := option.(type) {

@@ -44,7 +44,6 @@ type AwaitClient interface {
 	GetWhen(key types.NamespacedName, obj client.Object, predicateFunc eventually.PredicateFunc) gomega.AsyncAssertion
 }
 
-
 type IntegrationTest interface {
 	ctrl.Manager
 	StartManager()
@@ -58,6 +57,6 @@ type IntegrationTest interface {
 type Builder interface {
 	WithWebhookInstallOptions(options envtest.WebhookInstallOptions) Builder
 	WithScheme(*runtime.Scheme) Builder
+	WithIsolatedNamespace(bool) Builder
 	Complete(cfg *rest.Config) IntegrationTest
 }
-

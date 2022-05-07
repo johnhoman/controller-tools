@@ -43,7 +43,7 @@ func Nginx() func(client.Object) {
 		setSpec(obj.(*corev1.Pod), Map{
 			"containers": List{
 				Map{
-					"name": "nginx",
+					"name":  "nginx",
 					"image": "nginx:latest",
 				},
 			},
