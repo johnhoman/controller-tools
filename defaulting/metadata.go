@@ -88,3 +88,18 @@ func initLabels(obj client.Object) {
 	}
 	obj.SetLabels(labels)
 }
+
+type Finalizer string
+
+func (n Finalizer) Apply(obj client.Object) {
+	finalizers := obj.GetFinalizers()
+	if finalizers == nil {
+		finalizers = make([]string, 0, 1)
+	}
+	finalizers = append(finalizers, string(n))
+	obj.SetFinalizers(finalizers)
+}
+
+func WithFinalizer(finalizer string) Finalizer {
+	return Finalizer(finalizer)
+}
