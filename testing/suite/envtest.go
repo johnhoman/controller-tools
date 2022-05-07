@@ -2,13 +2,14 @@ package suite
 
 import (
 	"context"
-	"github.com/johnhoman/controller-tools/testing/manager"
+
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes/scheme"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"k8s.io/client-go/rest"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
+
+	"github.com/johnhoman/controller-tools/testing/manager"
 )
 
 type EnvTest struct {
