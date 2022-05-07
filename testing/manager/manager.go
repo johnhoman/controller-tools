@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"github.com/johnhoman/controller-tools/testing/internal/testing/crud"
 	"net/http"
 
 	"github.com/go-logr/logr"
@@ -119,6 +120,14 @@ func (m *Manager) RandomNamespace() (*corev1.Namespace, client.Client, error) {
 		return nil, nil, err
 	}
 	return ns, client.NewNamespacedClient(cli, ns.GetName()), nil
+}
+
+func (m *Manager) Create(obj client.Object, options ...interface{}) error {
+	return crud.Create(m, obj, options...)
+}
+
+func (m *Manager) Read(key client.ObjectKey, obj client.Object, options ...interface{}) error {
+	return crud.Read(m, key, obj, options...)
 }
 
 var _ ctrl.Manager = &Manager{}

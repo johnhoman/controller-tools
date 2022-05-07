@@ -5,6 +5,7 @@ import (
 	"github.com/johnhoman/controller-tools/testing/manager"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes/scheme"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
@@ -37,6 +38,14 @@ func (suite *EnvTest) SetupSuite() {
 	suite.cfg, err = suite.testEnv.Start()
 	require.Nil(suite.T(), err)
 	require.NotNil(suite.T(), suite.cfg)
+}
+
+func (suite *EnvTest) Create(obj client.Object, options ...interface{}) {
+	suite.Require().Nil(suite.mgr.Create(obj, options...))
+}
+
+func (suite *EnvTest) Read(key client.ObjectKey, obj client.Object, options ...interface{}) {
+	suite.Require().Nil(suite.mgr.Read(key, obj, options...))
 }
 
 func (suite *EnvTest) SetupTest() {
