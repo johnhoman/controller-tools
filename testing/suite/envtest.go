@@ -24,30 +24,35 @@ func (suite *EnvTest) Manager() *manager.Manager {
 	return suite.mgr
 }
 
-func (suite *EnvTest) SetupTest() {
+func (suite *EnvTest) SetupSuite() {
 	suite.testEnv = &envtest.Environment{}
 
 	var err error
 	suite.cfg, err = suite.testEnv.Start()
 	require.Nil(suite.T(), err)
 	require.NotNil(suite.T(), suite.cfg)
+}
 
+func (suite *EnvTest) SetupTest() {
+	require.NotNil(suite.T(), suite.cfg)
 	suite.context, suite.cancelFunc = context.WithCancel(context.Background())
 	suite.mgr = manager.NewManager(suite.cfg, scheme.Scheme)
 
 	go func() {
 		defer func() {
 			if e := recover(); e != nil {
-				require.Fail(suite.T(), e.(error).Error())
+				suite.Fail(e.(error).Error())
 			}
 		}()
-		require.Nil(suite.T(), suite.mgr.Start(suite.context))
+		suite.Nil(suite.mgr.Start(suite.context))
 	}()
-	require.NotNil(suite.T(), suite.mgr.NamespacedClient())
-	require.Nil(suite.T(), err)
+	suite.NotNil(suite.mgr.NamespacedClient())
 }
 
 func (suite *EnvTest) TearDownTest() {
 	suite.cancelFunc()
+}
+
+func (suite *EnvTest) TearDownSuite() {
 	require.Nil(suite.T(), suite.testEnv.Stop())
 }
